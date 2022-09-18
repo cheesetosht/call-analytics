@@ -10,12 +10,14 @@
 
 import React, {useEffect, useState} from 'react';
 import {
+  BackHandler,
   PermissionsAndroid,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from 'react-native';
 
@@ -28,33 +30,50 @@ const App = () => {
 
   const [call_logs, setCallLogs] = useState([]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
-          {
-            title: 'Call Log Example',
-            message: 'Access your call logs',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          const filter = {
-            maxTimestamp: new Date().getTime(),
-            minTimestamp: new Date().getTime() - 24 * 60 * 60 * 1000,
-            // types: ['INCOMING', 'OUTGOING', 'MISSED'],
-          };
-          CallLogs.load(-1, filter).then((c: any) => setCallLogs(c));
-        } else {
-          console.log('Call Log permission denied');
-        }
-      } catch (e) {
-        console.log(e);
+  const fetchCallLogs = async (minTimestamp: number, maxTimestamp: number) => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
+        {
+          title: 'Allow access to call logs?',
+          message:
+            'The app will need permission to access your call logs in order to work',
+          buttonPositive: 'Allow',
+          buttonNegative: 'Deny',
+          buttonNeutral: 'Ask me later',
+        },
+      );
+
+      if (!granted) {
+        ToastAndroid.show('Call log permission denied', ToastAndroid.SHORT);
+        return BackHandler.exitApp();
       }
-    })();
+
+      if (granted) {
+        const filter = {
+          // types: ['INCOMING', 'OUTGOING', 'MISSED'],
+          minTimestamp,
+          maxTimestamp,
+        };
+        CallLogs.load(-1, filter).then((c: any) => setCallLogs(c));
+      }
+    } catch (err) {
+      ToastAndroid.show('An error occured', ToastAndroid.SHORT);
+    }
+  };
+
+  useEffect(() => {
+    const start = new Date();
+    start.setHours(6, 0, 0, 0);
+
+    const end = new Date();
+    end.setDate(start.getDate() + 1);
+    end.setHours(6, 0, 0, 0);
+
+    // console.log('<START>', start.toDateString(), start.toTimeString());
+    // console.log('<END>', end.toDateString(), end.toTimeString());
+
+    fetchCallLogs(start.getTime(), end.getTime());
   }, []);
 
   const data = [
@@ -98,7 +117,7 @@ const App = () => {
           padding: 12,
         }}>
         <Text style={{fontSize: 18, fontWeight: '600', color: foreground[100]}}>
-          Last 24 hours{' '}
+          Today
         </Text>
         <View
           style={{
