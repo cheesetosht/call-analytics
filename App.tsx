@@ -29,7 +29,8 @@ import useTheme from './src/hooks/useTheme';
 const App = () => {
   const {isDarkMode, Foreground, Background, accent} = useTheme();
 
-  const [call_logs, setCallLogs] = useState([]);
+  const [today_logs, setTodayLogs] = useState([]);
+  const [yesterday_logs, setYesterdayLogs] = useState([]);
 
   const fetchCallLogs = async (minTimestamp: number, maxTimestamp: number) => {
     try {
@@ -56,14 +57,17 @@ const App = () => {
           minTimestamp,
           maxTimestamp,
         };
-        CallLogs.load(-1, filter).then((c: any) => setCallLogs(c));
+
+        const logs = await CallLogs.load(-1, filter);
+
+        return logs;
       }
     } catch (err) {
       ToastAndroid.show('An error occured', ToastAndroid.SHORT);
     }
   };
 
-  useEffect(() => {
+  const getToday = () => {
     const start = new Date();
     start.setHours(6, 0, 0, 0);
 
@@ -71,22 +75,39 @@ const App = () => {
     end.setDate(start.getDate() + 1);
     end.setHours(6, 0, 0, 0);
 
+    return [start.getTime(), end.getTime()];
+  };
+  const getYesterday = () => {
+    const start = new Date();
+    start.setDate(start.getDate() - 1);
+    start.setHours(6, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(6, 0, 0, 0);
+
+    return [start.getTime(), end.getTime()];
+  };
+
+  useEffect(() => {
     // console.log('<START>', start.toDateString(), start.toTimeString());
     // console.log('<END>', end.toDateString(), end.toTimeString());
 
-    fetchCallLogs(start.getTime(), end.getTime());
+    fetchCallLogs(getToday()[0], getToday()[1]).then(r => setTodayLogs(r));
+    fetchCallLogs(getYesterday()[0], getYesterday()[1]).then(r =>
+      setYesterdayLogs(r),
+    );
   }, []);
 
-  const data = [
+  const getData = (logs: any) => [
     {
       label: 'minutes',
-      value: (call_logs.reduce((p, c: any) => p + c.duration, 0) / 60).toFixed(
+      value: (logs.reduce((p: any, c: any) => p + c.duration, 0) / 60).toFixed(
         2,
       ),
     },
     {
       label: 'calls',
-      value: call_logs.length,
+      value: logs.length,
     },
   ];
 
@@ -117,7 +138,37 @@ const App = () => {
             width: '100%',
             paddingVertical: 12,
           }}>
-          {data.map((itr, i) => (
+          {getData(today_logs).map((itr, i) => (
+            <View
+              key={i}
+              style={[
+                i % 2 !== 0 ? {paddingEnd: 8} : null,
+                {
+                  paddingStart: i % 2 === 0 ? 0 : 8,
+                  paddingEnd: i % 2 === 0 ? 8 : 0,
+                  flexBasis: '50%',
+                },
+              ]}>
+              <StatCard key={i} {...itr} />
+            </View>
+          ))}
+        </View>
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: '600',
+            color: Foreground[200],
+          }}>
+          Yesterday
+        </Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            flex: 2,
+            width: '100%',
+            paddingVertical: 12,
+          }}>
+          {getData(yesterday_logs).map((itr, i) => (
             <View
               key={i}
               style={[
