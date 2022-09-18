@@ -1,4 +1,4 @@
-package com.callanalytics;
+package tech.vrajshah;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

@@ -1,4 +1,4 @@
-package com.callanalytics.newarchitecture;
+package tech.vrajshah.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.callanalytics.BuildConfig;
-import com.callanalytics.newarchitecture.components.MainComponentsRegistry;
-import com.callanalytics.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import tech.vrajshah.BuildConfig;
+import tech.vrajshah.newarchitecture.components.MainComponentsRegistry;
+import tech.vrajshah.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
