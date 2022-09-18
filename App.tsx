@@ -22,11 +22,12 @@ import {
 } from 'react-native';
 
 import CallLogs from 'react-native-call-log';
+import Header from './src/components/header';
 import StatCard from './src/components/stat-card';
 import useTheme from './src/hooks/useTheme';
 
 const App = () => {
-  const {isDarkMode, foreground, background} = useTheme();
+  const {isDarkMode, Foreground, Background, accent} = useTheme();
 
   const [call_logs, setCallLogs] = useState([]);
 
@@ -90,33 +91,23 @@ const App = () => {
   ];
 
   return (
-    <SafeAreaView style={{backgroundColor: background[100], flex: 1}}>
+    <SafeAreaView style={{backgroundColor: Background[100], flex: 1}}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={background[200]}
+        backgroundColor={accent}
       />
-      {/* ----- Header ----- */}
-      <View
-        style={{
-          backgroundColor: background[200],
-          padding: 16,
-        }}>
-        <Text
-          style={{
-            color: foreground[100],
-            fontWeight: '700',
-            fontSize: 24,
-          }}>
-          Call Analyzer
-        </Text>
-      </View>
-      {/* ----- Body ----- */}
+      <Header />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{
           padding: 12,
         }}>
-        <Text style={{fontSize: 18, fontWeight: '600', color: foreground[100]}}>
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: '600',
+            color: Foreground[200],
+          }}>
           Today
         </Text>
         <View

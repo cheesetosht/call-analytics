@@ -8,19 +8,19 @@ interface IStatCardProps extends ViewProps {
 }
 
 const StatCard: React.FC<IStatCardProps> = ({value, label, style, ...rest}) => {
-  const {foreground, background} = useTheme();
+  const {Foreground, Background} = useTheme();
 
   return (
     <View
       style={[
         style,
         {
-          backgroundColor: background[200],
+          backgroundColor: Background[200],
           borderRadius: ROUNDED.LG,
           padding: 16,
         },
       ]}>
-      <Text style={{color: foreground[100], fontSize: 32, fontWeight: '700'}}>
+      <Text style={{color: Foreground[100], fontSize: 32, fontWeight: '700'}}>
         {value}
       </Text>
       <Text>{label}</Text>
